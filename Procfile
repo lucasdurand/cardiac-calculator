@@ -1,1 +1,1 @@
-web: gunicorn mvp:app.server
+web: gunicorn mvp:server
