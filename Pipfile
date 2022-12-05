@@ -9,6 +9,7 @@ dash-bootstrap-components = "*"
 more-itertools = "*"
 ipytest = "*"
 pandas = "*"
+gunicorn = "*"
 
 [dev-packages]
 ipykernel = "*"
