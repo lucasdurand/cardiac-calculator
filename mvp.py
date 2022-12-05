@@ -1,7 +1,7 @@
-from statistics import multimode
 from dash import html, dcc, Dash
 import dash_bootstrap_components as dbc
 import plotly.express as px
+import plotly.graph_objects as go
 import pandas as pd
 import riskscore as carpreg2
 
@@ -60,6 +60,15 @@ carpreg2_dropdown = dcc.Dropdown(
     multi=True,
 )
 
+carpreg2_accordion = html.Div(
+    [
+        dcc.Markdown(
+            """Choose all of the predictors that apply to the patient. As selections are added, the calculated scores will be updated in the adjacent panel"""
+        ),
+        carpreg2_dropdown,
+    ]
+)
+
 calculators = html.Div(
     [
         html.H1(
@@ -104,7 +113,16 @@ Pregnancy in women with heart disease continues to be associated with significan
                     title="Central Illustration",
                 ),
                 dbc.AccordionItem(
-                    [carpreg2_dropdown], item_id="carpregii-calc", title="Calculator"
+                    [
+                        dcc.Markdown(
+                            """Better understand the risk predictors and what they mean"""
+                        ),
+                        dcc.Graph(figure=carpreg2.predictors_figure),
+                    ],
+                    title="Risk Predictors",
+                ),
+                dbc.AccordionItem(
+                    [carpreg2_accordion], item_id="carpregii-calc", title="Calculator"
                 ),
             ],
             active_item="carpregii-calc",
@@ -112,24 +130,44 @@ Pregnancy in women with heart disease continues to be associated with significan
     ]
 )
 
-severities = ["Low", "Moderate", "Severe"]
-
-predictor_df = pd.DataFrame([carpreg2.predictors]).melt(
-    var_name="Predictor", value_name="Score"
+empty_figure = px.bar().update_layout(
+    annotations=[
+        go.layout.Annotation(
+            text="X",
+            font=go.layout.annotation.Font(size=150),
+            x=0.5,
+            y=0.5,
+            xref="paper",
+            yref="paper",
+            showarrow=False,
+        )
+    ]
 )
-predictor_df["Severity"] = predictor_df.Score.map(
-    {i + 1: severity for i, severity in enumerate(severities)}
-)
 
-empty_figure = px.bar(
-    predictor_df,
-    x="Predictor",
-    y="Score",
-    title="Pregnancy Risk Indicators",
-    color="Severity",
-    color_discrete_sequence=["green", "orange", "red"],
-    category_orders={"Severity": severities},
-    height=800,
+results = html.Div(
+    [
+        dbc.Row(dbc.Col(html.H1("Results"))),
+        dbc.Row(
+            [
+                dbc.Col(
+                    dbc.Button(
+                        [html.H2("Score: "), html.H2("0", id="score")],
+                        style={"display": "inline-flex"},
+                    )
+                ),
+                dbc.Col(
+                    dbc.Button(
+                        [html.H2("Risk: "), html.H2("0%", id="risk-pct")],
+                        style={"display": "inline-flex"},
+                    )
+                ),
+            ],
+            justify="center",
+            align="center",
+            class_name="text-center",
+        ),
+        dbc.Row(dbc.Col(dcc.Graph(figure=empty_figure))),
+    ]
 )
 
 app.layout = html.Div(
@@ -139,8 +177,8 @@ app.layout = html.Div(
             [
                 dbc.Row(
                     [
-                        dbc.Col([calculators]),
-                        dbc.Col([dcc.Graph(figure=empty_figure)]),
+                        dbc.Col(calculators, sm=12, md=6, class_name="mb-4"),
+                        dbc.Col(results, sm=12, md=6),
                     ]
                 ),
             ]
@@ -149,6 +187,6 @@ app.layout = html.Div(
 )
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0")
 else:  # running in Gunicorn / on Heroku
     server = app.server
