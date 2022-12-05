@@ -1,4 +1,4 @@
-from dash import html, dcc, Dash
+from dash import html, dcc, Dash, callback, Output, Input, State
 import dash_bootstrap_components as dbc
 import plotly.express as px
 import plotly.graph_objects as go
@@ -58,6 +58,7 @@ carpreg2_dropdown = dcc.Dropdown(
         {"label": predictor, "value": predictor} for predictor in carpreg2.predictors
     ],
     multi=True,
+    id="carpreg2-predictor-dropdown",
 )
 
 carpreg2_accordion = html.Div(
@@ -144,9 +145,33 @@ empty_figure = px.bar().update_layout(
     ]
 )
 
+
+def create_card(
+    text: str,
+    *,
+    header: str = None,
+    title: str = None,
+    color: str = "primary",
+    outline: bool = True,
+) -> dbc.Card:
+    return dbc.Card(
+        [
+            dbc.CardHeader(header) if header else "",
+            dbc.CardBody(
+                [
+                    html.H4("Interpretation", className="card-title") if title else "",
+                    html.P(text, className="card-text"),
+                ]
+            ),
+        ],
+        color=color,
+        outline=outline,
+    )
+
+
 results = html.Div(
     [
-        dbc.Row(dbc.Col(html.H1("Results"))),
+        dbc.Row(dbc.Col(html.H1("Your Results"))),
         dbc.Row(
             [
                 dbc.Col(
@@ -164,9 +189,33 @@ results = html.Div(
             ],
             justify="center",
             align="center",
-            class_name="text-center",
+            class_name="text-center mb-3",
         ),
-        dbc.Row(dbc.Col(dcc.Graph(figure=empty_figure))),
+        dbc.Row(
+            dbc.Col(
+                [
+                    html.Div(
+                        create_card(
+                            text="You're Great!",
+                            title="Interpretation",
+                            color="success",
+                        ),
+                        id="interpretation-card",
+                    )
+                ]
+            )
+        ),
+        dbc.Row(
+            dbc.Col(
+                [
+                    dcc.Graph(
+                        figure=empty_figure.update_layout(
+                            title="This Figure Could Show Something?"
+                        )
+                    )
+                ]
+            )
+        ),
     ]
 )
 
@@ -178,13 +227,53 @@ app.layout = html.Div(
                 dbc.Row(
                     [
                         dbc.Col(calculators, sm=12, md=6, class_name="mb-4"),
-                        dbc.Col(results, sm=12, md=6),
+                        dbc.Col(results, sm=12, md=6), # maybe this is all in a big card that's callbacked to update pieces like color + headers?
                     ]
                 ),
             ]
         ),
     ]
 )
+
+
+@callback(
+    output=dict(
+        results=dict(
+            score=Output("score", "children"), risk_pct=Output("risk-pct", "children")
+        ),
+        interpretation_card=Output("interpretation-card", "children"),
+    ),
+    inputs=dict(predictors=Input("carpreg2-predictor-dropdown", "value")),
+)
+def update_scores(predictors):
+    score = carpreg2.calculate_risk_score(factors=predictors)
+    risk_pct = carpreg2.calculate_risk_percentage(score=score)
+
+    match score:
+        case score if score == 0:
+            color = "success"
+            card_header = "Don't worry, be happy"
+            card_text = "You're Great!"
+        case score if score < 4:
+            color = "warning"
+            card_header = "Moderate Risk"
+            card_text = "You may want to consult a specialist about the potential risks of pregnancy"
+        case _:
+            color = "danger"
+            card_header = "High Risk"
+            card_text = (
+                "Please consult a specialist about the considerable risks of pregnancy"
+            )
+
+    interpretation_card = (
+        create_card(
+            text=card_text, header=card_header, title="Interpretation", color=color
+        ),
+    )
+    results = dict(score=score, risk_pct=f"{risk_pct:.0%}")
+
+    return dict(results=results, interpretation_card=interpretation_card)
+
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")
