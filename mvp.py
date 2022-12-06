@@ -1,8 +1,9 @@
-from dash import html, dcc, Dash, callback, Output, Input, State
+from dash import html, dcc, Dash, callback, Output, Input
 import dash_bootstrap_components as dbc
 import plotly.express as px
 import plotly.graph_objects as go
-import pandas as pd
+from more_itertools import always_iterable
+
 import riskscore as carpreg2
 
 app = Dash(
@@ -194,17 +195,12 @@ results = html.Div(
         dbc.Row(
             dbc.Col(
                 [
-                    html.Div(
-                        create_card(
-                            text="You're Great!",
-                            title="Interpretation",
-                            color="success",
-                        ),
-                        id="interpretation-card",
-                    )
+                    html.H3("Predictors"),
+                    html.P(id="predictors-list"),
                 ]
             )
         ),
+        dbc.Row(dbc.Col([html.Div(id="interpretation-card")])),
         dbc.Row(
             dbc.Col(
                 [
@@ -227,7 +223,9 @@ app.layout = html.Div(
                 dbc.Row(
                     [
                         dbc.Col(calculators, sm=12, md=6, class_name="mb-4"),
-                        dbc.Col(results, sm=12, md=6), # maybe this is all in a big card that's callbacked to update pieces like color + headers?
+                        dbc.Col(
+                            results, sm=12, md=6
+                        ),  # maybe this is all in a big card that's callbacked to update pieces like color + headers?
                     ]
                 ),
             ]
@@ -242,10 +240,14 @@ app.layout = html.Div(
             score=Output("score", "children"), risk_pct=Output("risk-pct", "children")
         ),
         interpretation_card=Output("interpretation-card", "children"),
+        predictors_list=Output("predictors-list", "children"),
     ),
     inputs=dict(predictors=Input("carpreg2-predictor-dropdown", "value")),
 )
 def update_scores(predictors):
+    predictors_list = html.Ul(
+        children=[html.Li(predictor) for predictor in predictors or [None]]
+    )
     score = carpreg2.calculate_risk_score(factors=predictors)
     risk_pct = carpreg2.calculate_risk_percentage(score=score)
 
@@ -272,7 +274,11 @@ def update_scores(predictors):
     )
     results = dict(score=score, risk_pct=f"{risk_pct:.0%}")
 
-    return dict(results=results, interpretation_card=interpretation_card)
+    return dict(
+        results=results,
+        interpretation_card=interpretation_card,
+        predictors_list=predictors_list,
+    )
 
 
 if __name__ == "__main__":
