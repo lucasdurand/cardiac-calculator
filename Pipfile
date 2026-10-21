@@ -4,21 +4,18 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-dash = "*"
-dash-bootstrap-components = "*"
-more-itertools = "*"
-ipytest = "*"
-pandas = "*"
-gunicorn = "*"
+dash = ">=4.4"
+dash-bootstrap-components = ">=2.0"
+more-itertools = ">=11.2"
+ipytest = ">=0.14"
+pandas = ">=3.0"
+gunicorn = ">=26.2"
 
 [dev-packages]
-ipykernel = "*"
-pytest-clarity = "*"
-black = "*"
-pylint = "*"
+ipykernel = ">=7.4"
+pytest-clarity = ">=1.0"
+black = ">=26.10"
+pylint = ">=4.1"
 
 [requires]
-python_version = "3.10"
-
-[pipenv]
-allow_prereleases = true
+python_version = "3.12"
