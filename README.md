@@ -8,7 +8,7 @@ An MVP for a simple calculator app with cardiac-obstetric applications
 
 ### Installation
 
-Create a new virtual environment with the dependencies using `python -m pipenv install --dev`
+Install [uv](https://docs.astral.sh/uv/), then create the virtual environment with `uv sync` and run the app with `uv run python mvp.py`
 
 ### Deployment
 
