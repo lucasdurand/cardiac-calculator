@@ -95,7 +95,6 @@ dependencies = [
     { name = "dash" },
     { name = "dash-bootstrap-components" },
     { name = "gunicorn" },
-    { name = "ipytest" },
     { name = "more-itertools" },
     { name = "pandas" },
 ]
@@ -104,6 +103,7 @@ dependencies = [
 dev = [
     { name = "black" },
     { name = "ipykernel" },
+    { name = "ipytest" },
     { name = "pylint" },
     { name = "pytest-clarity" },
 ]
@@ -113,7 +113,6 @@ requires-dist = [
     { name = "dash", specifier = ">=4.4" },
     { name = "dash-bootstrap-components", specifier = ">=2.0" },
     { name = "gunicorn", specifier = ">=26.2" },
-    { name = "ipytest", specifier = ">=0.14" },
     { name = "more-itertools", specifier = ">=11.2" },
     { name = "pandas", specifier = ">=3.0" },
 ]
@@ -122,6 +121,7 @@ requires-dist = [
 dev = [
     { name = "black", specifier = ">=26.10" },
     { name = "ipykernel", specifier = ">=7.4" },
+    { name = "ipytest", specifier = ">=0.14" },
     { name = "pylint", specifier = ">=4.1" },
     { name = "pytest-clarity", specifier = ">=1.0" },
 ]

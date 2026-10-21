@@ -8,7 +8,6 @@ dependencies = [
     "dash>=4.4",
     "dash-bootstrap-components>=2.0",
     "gunicorn>=26.2",
-    "ipytest>=0.14",
     "more-itertools>=11.2",
     "pandas>=3.0",
 ]
@@ -17,6 +16,7 @@ dependencies = [
 dev = [
     "black>=26.10",
     "ipykernel>=7.4",
+    "ipytest>=0.14",
     "pylint>=4.1",
     "pytest-clarity>=1.0",
 ]
