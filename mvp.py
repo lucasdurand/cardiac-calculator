@@ -51,7 +51,7 @@ navbar = dbc.Navbar(
     ),
     color="dark",
     dark=True,
-    style={"margin-bottom": "1rem"},
+    style={"marginBottom": "1rem"},
 )
 
 carpreg2_dropdown = dcc.Dropdown(
@@ -196,7 +196,7 @@ results = html.Div(
             dbc.Col(
                 [
                     html.H3("Predictors"),
-                    html.P(id="predictors-list"),
+                    html.Div(id="predictors-list"),
                 ]
             )
         ),
