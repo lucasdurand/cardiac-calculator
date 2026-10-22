@@ -19,6 +19,6 @@ The app runs on [Google App Engine](https://cloud.google.com/appengine/docs/stan
 1. Deploy with `gcloud app deploy`
 1. View it with `gcloud app browse -s cardiac-calculator`
 
-Pushes to `main` deploy automatically via [the Deploy workflow](.github/workflows/deploy.yml), which needs a `GCP_SA_KEY` Actions secret (service-account key JSON). It also fails if `requirements.txt` is out of date with `uv.lock`.
+Pushes to `main` deploy automatically via [the Deploy workflow](.github/workflows/deploy.yml). Pushes to `develop` upload a preview version that gets no traffic, at https://develop-dot-cardiac-calculator-dot-ladders-dash.uc.r.appspot.com. The workflow needs a `GCP_SA_KEY` Actions secret (service-account key JSON). It also fails if `requirements.txt` is out of date with `uv.lock`.
 
 App Engine requires a project's first service to be `default`, so in a brand new project remove the `service:` line from `app.yaml` for the first deploy.
